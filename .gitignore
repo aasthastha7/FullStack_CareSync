@@ -1,0 +1,24 @@
+# ── Environment & secrets ──────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Python ─────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+
+# ── Node / Frontend build ─────────────────────────────────────
+node_modules/
+dist/
+
+# ── Deployment ────────────────────────────────────────────────
+.vercel/
+
+# ── OS junk ───────────────────────────────────────────────────
+.DS_Store
+
+# ── Dev / test helpers (contain local paths, not committed) ──
+backend/_live_test.py
+backend/_probe.py
+backend/_provision_user.py
