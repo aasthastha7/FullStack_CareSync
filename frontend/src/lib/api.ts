@@ -42,7 +42,7 @@ async function request<T = unknown>(path: string, options: RequestInit = {}): Pr
     ...(options.headers as Record<string, string> | undefined),
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  const apiBase = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+  const apiBase = import.meta.env.VITE_API_URL ?? "";
   const res = await fetch(`${apiBase}/api${path}`, { ...options, headers });
   if (!res.ok) {
     let detail = `Request failed (${res.status})`;
