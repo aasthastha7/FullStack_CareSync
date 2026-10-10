@@ -1,26 +1,12 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "Frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    },
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    { "src": "/api/(.*)",   "dest": "/api/index.py" },
-    { "src": "/auth/(.*)",  "dest": "/api/index.py" },
-    { "src": "/health",     "dest": "/api/index.py" },
-    { "src": "/docs",       "dest": "/api/index.py" },
-    { "src": "/openapi.json", "dest": "/api/index.py" },
-    { "src": "/assets/(.*)",  "dest": "/Frontend/assets/$1" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)",        "dest": "/Frontend/index.html" }
+  "buildCommand": "cd Frontend && npm install && npm run build",
+  "outputDirectory": "Frontend/dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/auth/(.*)", "destination": "/api/index" },
+    { "source": "/health", "destination": "/api/index" },
+    { "source": "/docs", "destination": "/api/index" },
+    { "source": "/openapi.json", "destination": "/api/index" },
+    { "source": "/((?!api/|auth/|health|docs|openapi.json|assets/).*)", "destination": "/index.html" }
   ]
 }
