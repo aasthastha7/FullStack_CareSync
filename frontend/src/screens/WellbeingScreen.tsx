@@ -502,7 +502,7 @@ export default function WellbeingScreen() {
         </div>
       </FormSection>
 
-      {/* 6. My Requests */}
+      {/* 6. My Requests
       <FormSection title="My Requests" subtitle="Your recent wellbeing and support requests">
         {requestsLoading ? (
           <p className="text-sm text-gray-400">Loading…</p>
@@ -536,7 +536,7 @@ export default function WellbeingScreen() {
             ))}
           </div>
         )}
-      </FormSection>
+      </FormSection> */}
 
       <Link
         to="/dashboard"
