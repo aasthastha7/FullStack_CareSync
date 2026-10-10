@@ -48,9 +48,9 @@ export default function ProfileScreen() {
           <p className="text-gray-600">
             <strong>Employee ID:</strong> {profile?.employee_id ?? "—"}
           </p>
-          <p className="text-gray-600">
+          {/* <p className="text-gray-600">
             <strong>Region:</strong> {profile?.region ?? "—"}
-          </p>
+          </p> */}
         </div>
       </div>
 
