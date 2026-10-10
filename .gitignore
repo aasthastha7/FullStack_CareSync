@@ -18,6 +18,9 @@ dist/
 # ── OS junk ───────────────────────────────────────────────────
 .DS_Store
 
+# ── Build caches ──────────────────────────────────────────────
+*.tsbuildinfo
+
 # ── Dev / test helpers (contain local paths, not committed) ──
 backend/_live_test.py
 backend/_probe.py
