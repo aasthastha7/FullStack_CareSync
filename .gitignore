@@ -25,3 +25,4 @@ dist/
 backend/_live_test.py
 backend/_probe.py
 backend/_provision_user.py
+.vercel
