@@ -42,7 +42,8 @@ async function request<T = unknown>(path: string, options: RequestInit = {}): Pr
     ...(options.headers as Record<string, string> | undefined),
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(`/api${path}`, { ...options, headers });
+  const apiBase = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+  const res = await fetch(`${apiBase}/api${path}`, { ...options, headers });
   if (!res.ok) {
     let detail = `Request failed (${res.status})`;
     try { const body = await res.json(); detail = body.detail ?? JSON.stringify(body); } catch { /* noop */ }
