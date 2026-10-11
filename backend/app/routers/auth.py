@@ -48,7 +48,7 @@ class SignupRequest(BaseModel):
     password: str = Field(..., description="At least 8 characters")
     full_name: str = Field(..., min_length=1, description="Full name")
     role: str = Field(default=DEFAULT_ROLE, description="Job role")
-    employee_id: str | None = Field(default=None, description="Optional employee id")
+    employee_id: str = Field(..., min_length=1, description="Employee id")
     timezone: str | None = Field(default=None, description="IANA timezone, e.g. 'Asia/Kathmandu'")
 
 
@@ -69,7 +69,7 @@ class UserSummary(BaseModel):
 
 class SignupUser(UserSummary):
     role: str = DEFAULT_ROLE
-    employee_id: str | None = None
+    employee_id: str
 
 
 class SignupResponse(BaseModel):
@@ -320,9 +320,37 @@ def ensure_profile(user_id: str, metadata: dict[str, Any]) -> dict[str, Any]:
 
     This makes ``GET /me`` resilient when the database trigger failed or the
     user was created via an older schema that did not seed a profile.
+    Also ensures a staff row exists so the user appears in colleague search.
     """
     profile = fetch_profile(user_id)
     if profile is not None:
+        # Safety-net: ensure a staff row exists for this account
+        try:
+            conn = get_connection()
+            try:
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        insert into public.staff
+                            (id, name, role, employee_id, email, user_id, date_joined)
+                        values (%s, %s, %s, %s, %s, %s, to_char(now(), 'DDth Mon YYYY'))
+                        on conflict (id) do nothing
+                        """,
+                        (
+                            f"user-{user_id}",
+                            profile.get("full_name") or "Unknown",
+                            profile.get("role") or "Care Worker",
+                            profile.get("employee_id"),
+                            profile.get("email"),
+                            user_id,
+                        ),
+                    )
+                    conn.commit()
+            finally:
+                conn.close()
+        except Exception:
+            # Staff insert failure must not break profile retrieval
+            pass
         return profile
 
     # Build the row from the token's metadata
@@ -473,9 +501,8 @@ def signup(payload: SignupRequest) -> dict[str, Any]:
     metadata: dict[str, Any] = {
         "full_name": payload.full_name,
         "role": payload.role,
+        "employee_id": payload.employee_id,
     }
-    if payload.employee_id:
-        metadata["employee_id"] = payload.employee_id
     if payload.timezone:
         metadata["timezone"] = payload.timezone
     try:

@@ -15,7 +15,7 @@ interface AppState {
     password: string,
     full_name: string,
     role: string,
-    employee_id?: string,
+    employee_id: string,
   ) => Promise<void>;
   loginError: string | null;
   clearAndLogout: () => void;
@@ -84,7 +84,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     password: string,
     full_name: string,
     role: string,
-    employee_id?: string,
+    employee_id: string,
   ) {
     setLoginError(null);
     // 1. Create the account

@@ -29,6 +29,18 @@ begin
           new.raw_user_meta_data->>'employee_id', v_tz)
   on conflict (id) do nothing;
 
+  -- Staff directory entry linked to the account
+  insert into public.staff (id, name, role, employee_id, user_id, date_joined)
+  values (
+    'user-' || new.id,
+    coalesce(new.raw_user_meta_data ->> 'full_name', split_part(coalesce(new.email, ''), '@', 1)),
+    coalesce(nullif(new.raw_user_meta_data ->> 'role', ''), 'Care Worker'),
+    new.raw_user_meta_data ->> 'employee_id',
+    new.id,
+    to_char(now(), 'DDth Mon YYYY')
+  )
+  on conflict (id) do nothing;
+
   insert into public.shifts (user_id,patient_name,start_time,end_time,address,task,duration,priority,shift_date,status)
   values (new.id,'Eleanor Smith','07:00','15:00','142 Maple Drive','Personal Care','2 hrs','High',v_today,'scheduled')
   returning id into v_shift_id;

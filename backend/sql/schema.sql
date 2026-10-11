@@ -142,8 +142,11 @@ create table if not exists public.staff (
   absent_days         integer not null default 0,
   late_days           integer not null default 0,
   present_percent     numeric not null default 0,
-  punctuality_percent numeric not null default 0
+  punctuality_percent numeric not null default 0,
+  user_id              uuid unique
 );
+
+create index if not exists staff_user_id_idx on public.staff (user_id);
 
 -- Staff attendance history
 create table if not exists public.staff_attendance (
@@ -189,6 +192,18 @@ begin
     new.email,
     coalesce(new.raw_user_meta_data ->> 'role', 'caregiver'),
     new.raw_user_meta_data ->> 'employee_id'
+  )
+  on conflict (id) do nothing;
+
+  -- Staff directory entry linked to the account
+  insert into public.staff (id, name, role, employee_id, user_id, date_joined)
+  values (
+    'user-' || new.id,
+    coalesce(new.raw_user_meta_data ->> 'full_name', split_part(coalesce(new.email, ''), '@', 1)),
+    coalesce(nullif(new.raw_user_meta_data ->> 'role', ''), 'Care Worker'),
+    new.raw_user_meta_data ->> 'employee_id',
+    new.id,
+    to_char(now(), 'DDth Mon YYYY')
   )
   on conflict (id) do nothing;
 
@@ -250,6 +265,7 @@ begin
      or new.name                is distinct from old.name
      or new.role                is distinct from old.role
      or new.employee_id         is distinct from old.employee_id
+     or new.user_id             is distinct from old.user_id
      or new.date_joined         is distinct from old.date_joined
      or new.employment_type     is distinct from old.employment_type
      or new.supervisor          is distinct from old.supervisor
@@ -486,7 +502,7 @@ grant select, insert, update, delete on
   to authenticated, service_role;
 
 -- staff directory: logged-in users can read and edit contact details
-grant select, update on public.staff to authenticated;
+grant select, update, insert on public.staff to authenticated;
 grant select on public.staff_attendance to authenticated;
 
 -- the service role (and the backend) manages staff + attendance rows

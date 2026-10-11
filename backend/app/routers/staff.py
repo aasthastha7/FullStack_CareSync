@@ -78,8 +78,11 @@ def list_staff(
                           current_status, total_tasks, average_time,
                           completion_rate, present_days, absent_days,
                           late_days, present_percent, punctuality_percent
-                   FROM public.staff WHERE name ILIKE %s ORDER BY name""",
-                (f"%{q.strip()}%",),
+                   FROM public.staff
+                   WHERE name ILIKE %s
+                     AND user_id IS DISTINCT FROM %s
+                   ORDER BY name""",
+                (f"%{q.strip()}%", current_user["id"]),
             )
             cols = [d[0] for d in cur.description]
             return [dict(zip(cols, row)) for row in cur.fetchall()]

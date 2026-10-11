@@ -115,6 +115,8 @@ The `python -m app.database` command runs the following scripts in order (all id
 | `005_support_requests_extend.sql` | Extend support_requests + GPS check-in columns |
 | `006_upcoming_shifts.sql` | Backfill upcoming shifts for existing users |
 | `007_timezone_fix.sql` | Add timezone column (Australia/Sydney default), timezone-aware trigger |
+| `008_staff_user_id.sql` | Link staff rows to auth accounts (user_id column, trigger creates staff on signup) |
+| `009_staff_email.sql` | Populate staff.email and employee_id from auth user on signup; backfill NULLs |
 
 ## Features
 

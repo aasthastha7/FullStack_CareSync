@@ -17,6 +17,7 @@ interface FieldErrors {
   fullName?: string;
   email?: string;
   role?: string;
+  employeeId?: string;
   password?: string;
   confirmPassword?: string;
   consent?: string;
@@ -44,6 +45,7 @@ export default function SignupScreen() {
     if (!email.trim()) next.email = "Email is required.";
     else if (!EMAIL_RE.test(email.trim()))
       next.email = "Please enter a valid email address.";
+    if (!employeeId.trim()) next.employeeId = "Employee ID is required.";
     if (password.length < 8)
       next.password = "Password must be at least 8 characters.";
     if (password !== confirmPassword)
@@ -72,7 +74,7 @@ export default function SignupScreen() {
     try {
       await signup(
         email.trim(), password, fullName.trim(), role,
-        employeeId.trim() || undefined,
+        employeeId.trim(),
       );
       navigate("/dashboard");
     } catch (err: unknown) {
@@ -162,13 +164,15 @@ export default function SignupScreen() {
           {errors.role && <p className="mt-1 text-sm text-red-600" role="alert">{errors.role}</p>}
         </div>
 
-        {/* Employee ID (optional) */}
+        {/* Employee ID */}
         <div className="mb-4">
           <InputField
-            label="Employee ID (optional)"
+            label="Employee ID"
             value={employeeId}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setEmployeeId(e.target.value)}
+            onBlur={() => touchField("employeeId")}
             placeholder="EMP-001"
+            error={errors.employeeId}
           />
         </div>
 

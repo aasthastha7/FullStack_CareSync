@@ -69,12 +69,12 @@ export async function apiSignup(
   email: string,
   password: string,
   full_name: string,
-  role?: string,
-  employee_id?: string,
+  role: string,
+  employee_id: string,
 ) {
   return request("/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password, full_name, role, employee_id: employee_id || undefined }),
+    body: JSON.stringify({ email, password, full_name, role, employee_id }),
   });
 }
 export async function apiGetProfile(): Promise<Profile> {

@@ -78,6 +78,8 @@ def init_database() -> None:
         run_sql_file(conn, "005_support_requests_extend.sql")
         run_sql_file(conn, "006_upcoming_shifts.sql")
         run_sql_file(conn, "007_timezone_fix.sql")
+        run_sql_file(conn, "008_staff_user_id.sql")
+        run_sql_file(conn, "009_staff_email.sql")
     finally:
         conn.close()
     print("Database initialization completed successfully")
